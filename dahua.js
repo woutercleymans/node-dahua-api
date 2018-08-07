@@ -5,7 +5,6 @@ var events    = require('events');
 var util      = require('util');
 var request   = require('request');
 var progress = require('request-progress');
-var NetKeepAlive = require('net-keepalive')
 
 var setKeypath = require('keypather/set');
 var fs = require('fs');
@@ -52,16 +51,6 @@ dahua.prototype.connect = function(options) {
     };
 
     var client = request(opts).auth(USER,PASS,false);
-
-    client.on('socket', function(socket) {
-      // Set keep-alive probes - throws ESOCKETTIMEDOUT error after ~16min if connection broken
-      NetKeepAlive.setKeepAliveInterval(socket, 1000);
-      if (TRACE) console.log('TCP_KEEPINTVL:',NetKeepAlive.getKeepAliveInterval(socket)); 
-      
-      NetKeepAlive.setKeepAliveProbes(socket, 1);
-      if (TRACE) console.log('TCP_KEEPCNT:',NetKeepAlive.getKeepAliveProbes(socket));
-      
-    });
 
     client.on('response', function() {  
       handleDahuaEventConnection(self,options);
